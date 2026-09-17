@@ -33,12 +33,38 @@ class RoadScene(tk.Canvas):
 
         self.crosswalk_x = int(w * 0.18)
 
+        self._resize_job = None
+        self.bind("<Configure>", self._on_canvas_resize)
+
+    def _on_canvas_resize(self, event):
+        nw, nh = event.width, event.height
+        if nw > 10 and nh > 10 and (nw != self.W or nh != self.H):
+            self.W = nw
+            self.H = nh
+            if self._resize_job:
+                self.after_cancel(self._resize_job)
+            self._resize_job = self.after(150, self._redraw_static)
+
+    def _redraw_static(self):
+        self._resize_job = None
+        self.delete("static")
+        self._draw_grass()
+        self._draw_greenery()
+        self._draw_sidewalks()
+        self._draw_road_surface()
+        self._draw_crosswalk()
+        self._draw_transit_bay()
+        self._draw_lane_markings()
+        self._draw_scale_and_labels()
+        self.tag_lower("static")
+
     def clear_dynamic(self):
         self.delete("dynamic")
 
     def draw_environment(self):
         self.delete("all")
         self._draw_grass()
+        self._draw_greenery()
         self._draw_sidewalks()
         self._draw_road_surface()
         self._draw_crosswalk()
@@ -49,6 +75,72 @@ class RoadScene(tk.Canvas):
     def _draw_grass(self):
         W, H = self.W, self.H
         self.create_rectangle(0, 0, W, H, fill=GRASS_SUMO, outline="", tags="static")
+
+    def _draw_greenery(self):
+        """Draw trees, bushes, lamp posts, and grass texture on green areas."""
+        W, H = self.W, self.H
+        sw_h = 28
+        top_edge = self.road_top - sw_h
+        bot_edge = self.road_bot + sw_h + 30
+        cx = self.crosswalk_x
+        bay = self.bay_x
+
+        def _tree(tx, base_y, h=30, r=11):
+            trunk_w, trunk_h = 3, int(h * 0.4)
+            self.create_rectangle(
+                tx - trunk_w, base_y - trunk_h, tx + trunk_w, base_y,
+                fill="#5c3d2e", outline="", tags="static")
+            cy = base_y - trunk_h - r + 3
+            self.create_oval(
+                tx - r - 2, cy - r, tx + r + 2, cy + r,
+                fill="#1a6b1a", outline="#155a15", width=1, tags="static")
+            self.create_oval(
+                tx - r + 2, cy - r + 1, tx + r - 2, cy + r - 1,
+                fill="#228b22", outline="", tags="static")
+
+        def _bush(px, py, rx=10, ry=5):
+            self.create_oval(
+                px - rx, py - ry, px + rx, py + ry,
+                fill="#2d8a2d", outline="#1e6b1e", width=1, tags="static")
+            self.create_oval(
+                px - rx + 2, py - ry + 1, px + rx - 2, py + ry - 1,
+                fill="#35a035", outline="", tags="static")
+
+        # Trees along top grass
+        for tx in [80, 240, 430, 600, 780, 960, 1130]:
+            if 0 < tx < W and not (cx - 25 < tx < cx + 95):
+                _tree(tx, top_edge - 2, h=28, r=10)
+
+        # Bushes along top sidewalk edge
+        for px in [45, 160, 340, 510, 700, 870, 1050, 1200]:
+            if 0 < px < W and not (cx - 20 < px < cx + 90):
+                _bush(px, top_edge - 3, rx=8, ry=4)
+
+        # Bushes along bottom grass (avoid bay/shed area)
+        for px in [60, 200, 380, 1080, 1200]:
+            if 0 < px < W and not (bay - 140 < px < bay + 210):
+                if bot_edge + 10 < H - 5:
+                    _bush(px, bot_edge + 8, rx=10, ry=5)
+
+        # Subtle grass texture patches
+        for gx, gy in [(35, 18), (180, 12), (500, 22), (780, 8), (1080, 28),
+                        (300, 25), (650, 15), (900, 20)]:
+            if gx < W and gy < top_edge - 10:
+                self.create_oval(
+                    gx - 5, gy - 2, gx + 5, gy + 2,
+                    fill="#267322", outline="", tags="static")
+
+        # Street lamp posts along top grass
+        for lx in [200, 520, 850, 1070]:
+            if 0 < lx < W and not (cx - 20 < lx < cx + 90):
+                pole_top = 8
+                pole_bot = top_edge - 2
+                self.create_line(lx, pole_top, lx, pole_bot,
+                               fill="#6b7280", width=2, tags="static")
+                self.create_line(lx, pole_top + 1, lx + 8, pole_top + 1,
+                               fill="#6b7280", width=2, tags="static")
+                self.create_oval(lx + 5, pole_top - 2, lx + 11, pole_top + 4,
+                               fill="#fef08a", outline="#fde047", width=1, tags="static")
 
     def _draw_sidewalks(self):
         W = self.W
@@ -133,12 +225,39 @@ class RoadScene(tk.Canvas):
         sy = self.shed_y
         sw = 130
         sh = 26
+
+        # Shelter support posts
+        for px in [sx + 5, sx + sw - 5]:
+            self.create_rectangle(
+                px - 2, sy - 6, px + 2, sy + sh,
+                fill="#475569", outline="#384152", width=1, tags="static")
+
+        # Shelter canopy / roof
+        self.create_rectangle(sx - 5, sy - 9, sx + sw + 5, sy - 3,
+                               fill="#334155", outline="#475569", width=1, tags="static")
+        # Amber accent stripe on roof
+        self.create_rectangle(sx - 5, sy - 11, sx + sw + 5, sy - 9,
+                               fill=TRANSIT_BAY_HATCH, outline="", tags="static")
+
+        # Shelter body
         self.create_rectangle(sx, sy, sx + sw, sy + sh,
                                fill=TRANSIT_SHED, outline="#475569", width=2, tags="static")
-        self.create_text(sx + sw // 2, sy + sh // 2,
-                         text="WAITING AREA",
+
+        # Bench inside shelter
+        self.create_rectangle(sx + 8, sy + sh - 9, sx + sw - 8, sy + sh - 5,
+                               fill="#5a6577", outline="", tags="static")
+
+        self.create_text(sx + sw // 2, sy + sh // 2 - 3,
+                         text="WAITING SHED",
                          font=FONT_MAP_TINY, fill="#f8fafc", tags="static")
-        self.create_text(bx + bw // 2, rb + 14,
+
+        # Loading bay sign with amber background
+        sign_cx = bx + bw // 2
+        sign_cy = rb + 14
+        self.create_rectangle(
+            sign_cx - 62, sign_cy - 8, sign_cx + 62, sign_cy + 8,
+            fill="#d97706", outline="#b45309", width=1, tags="static")
+        self.create_text(sign_cx, sign_cy,
                          text="JEEPNEY LOADING BAY",
                          font=FONT_MAP_TINY, fill="#0f172a", tags="static")
 
@@ -166,7 +285,17 @@ class RoadScene(tk.Canvas):
 
     def _draw_scale_and_labels(self):
         W = self.W
-        self.create_text(60, self.road_top - 14, text="TO DAET ◀",
-                         font=FONT_MAP, fill="#ffffff", anchor=tk.W, tags="static")
-        self.create_text(W - 60, self.road_bot + 14, text="TO MERCEDES  ▶",
-                         font=FONT_MAP, fill="#ffffff", anchor=tk.E, tags="static")
+
+        # Green road direction sign: TO DAET (westbound)
+        s1x, s1y = 80, self.road_top - 16
+        self.create_rectangle(s1x - 48, s1y - 10, s1x + 48, s1y + 10,
+                               fill="#166534", outline="#15803d", width=2, tags="static")
+        self.create_text(s1x, s1y, text="◀  TO DAET",
+                         font=FONT_MAP, fill="#ffffff", tags="static")
+
+        # Green road direction sign: TO MERCEDES (eastbound)
+        s2x, s2y = W - 90, self.road_bot + 16
+        self.create_rectangle(s2x - 62, s2y - 10, s2x + 62, s2y + 10,
+                               fill="#166534", outline="#15803d", width=2, tags="static")
+        self.create_text(s2x, s2y, text="TO MERCEDES  ▶",
+                         font=FONT_MAP, fill="#ffffff", tags="static")

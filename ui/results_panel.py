@@ -23,6 +23,7 @@ class ResultsPanel(tk.Frame):
         self._visible = True
         self.pack(side=tk.BOTTOM, fill=tk.X)
         self.config(height=self.PANEL_H)
+        self.pack_propagate(False)
         if self.sim_data:
             self._sync_kpi_and_cursor()
 
@@ -144,14 +145,46 @@ class ResultsPanel(tk.Frame):
         self.lbl_lcm_map1 = tk.Label(lcm_box)
         self.lbl_lcm_map2 = tk.Label(lcm_box)
 
+        # ── Coprime Verification & Period (VISIBLE) ──
+        coprime_box = tk.LabelFrame(
+            left, text=" Coprime Verification & Sequence Period ",
+            font=("Segoe UI", 7, "bold"), bg="#ececec", fg="#0284c7", padx=5, pady=2
+        )
+        coprime_box.pack(fill=tk.X, pady=(0, 2))
+
+        self.lbl_period = tk.Label(
+            coprime_box, text="Sequence Period: --/--",
+            font=("Consolas", 8, "bold"), fg="#0284c7", bg="#ececec"
+        )
+        self.lbl_period.pack(anchor=tk.W)
+
+        tk.Frame(coprime_box, bg="#cbd5e1", height=1).pack(fill=tk.X, pady=3)
+
+        tk.Label(coprime_box, text="Hull-Dobell Full Period Conditions:",
+                 font=("Segoe UI", 7, "bold"), fg="#334155", bg="#ececec"
+        ).pack(anchor=tk.W)
+
+        self.lbl_c1 = tk.Label(coprime_box, text="C1: gcd(c, m) = 1  →  --",
+                               font=("Segoe UI", 7), fg="#64748b", bg="#ececec")
+        self.lbl_c1.pack(anchor=tk.W, pady=(1, 0))
+
+        self.lbl_c2 = tk.Label(coprime_box, text="C2: prime factors of m divide (a−1)  →  --",
+                               font=("Segoe UI", 7), fg="#64748b", bg="#ececec")
+        self.lbl_c2.pack(anchor=tk.W)
+
+        self.lbl_c3 = tk.Label(coprime_box, text="C3: if 4|m then 4|(a−1)  →  --",
+                               font=("Segoe UI", 7), fg="#64748b", bg="#ececec")
+        self.lbl_c3.pack(anchor=tk.W)
+
+        self.lbl_hd_res = tk.Label(coprime_box, text="→ Status: --",
+                                   font=("Segoe UI", 7, "bold"), fg="#64748b", bg="#ececec")
+        self.lbl_hd_res.pack(anchor=tk.W, pady=(2, 0))
+
+        # Hidden labels (used internally by dialogs)
         self.lbl_phi_val  = tk.Label(self)
         self.lbl_phi_desc = tk.Label(self)
         self.btn_coprimes = tk.Button(self)
         self.btn_phi_calc = tk.Button(self)
-        self.lbl_c1       = tk.Label(self)
-        self.lbl_c2       = tk.Label(self)
-        self.lbl_c3       = tk.Label(self)
-        self.lbl_hd_res   = tk.Label(self)
 
         right = tk.Frame(content, bg="#ececec")
         right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -199,13 +232,23 @@ class ResultsPanel(tk.Frame):
         cfg = self.sim_data["parameters"]
         phi = self.sim_data["euler_phi"]
         hd  = self.sim_data["hull_dobell"]
+        summary = self.sim_data["summary"]
 
         seed_txt = f"X0 = {cfg['seed']}"
         if cfg.get("seed_normalized"):
             seed_txt += f" (mod {cfg['modulus']} from {cfg['original_seed']})"
 
+        period = summary.get("period", "?")
+        is_full = summary.get("is_full_period", False)
+        period_tag = "FULL PERIOD ✓" if is_full else f"SUBOPTIMAL ✗"
+
         self.lbl_lcm_params.config(
             text=f"a = {cfg['multiplier']}   c = {cfg['increment']}   m = {cfg['modulus']}   {seed_txt}"
+        )
+
+        self.lbl_period.config(
+            text=f"Sequence Period: {period} / {cfg['modulus']}  —  {period_tag}",
+            fg="#15803d" if is_full else "#dc2626"
         )
 
         primes_str = ", ".join(str(f) for f in hd["prime_factors_m"]) or "None"

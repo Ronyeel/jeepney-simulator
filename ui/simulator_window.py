@@ -85,8 +85,8 @@ class SimulatorWindow:
     def _build_ui(self):
         self._build_toolbar()
         self._build_statusbar()   
-        self._build_canvas()
         self._build_results_panel()
+        self._build_canvas()
 
     def _build_toolbar(self):
         bar = tk.Frame(self.root, bg=BG_TOOLBAR, height=36, bd=0, relief=tk.FLAT)

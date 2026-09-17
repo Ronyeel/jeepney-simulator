@@ -50,16 +50,24 @@ def get_prime_factors(n):
     return sorted(factors)
 
 def euler_phi(n):
+    """Compute Euler's totient using the product formula — O(√n)."""
     n_val = int(n)
     if n_val <= 0:
         return 0
     if n_val == 1:
         return 1
-    count = 0
-    for k in range(1, n_val + 1):
-        if gcd(k, n_val) == 1:
-            count += 1
-    return count
+    result = n_val
+    temp = n_val
+    p = 2
+    while p * p <= temp:
+        if temp % p == 0:
+            while temp % p == 0:
+                temp //= p
+            result -= result // p
+        p += 1
+    if temp > 1:
+        result -= result // temp
+    return result
 
 _SUPERSCRIPTS = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
@@ -236,6 +244,24 @@ def lcm_step_breakdown(x, a, c, m):
         "calculation_str": calc_detail,
     }
 
+def compute_period(seed, a, c, m):
+    """Compute the actual period length of the LCM sequence starting from seed.
+
+    For a full-period generator (Hull-Dobell satisfied), period == m.
+    For suboptimal generators, the period will be shorter than m.
+    """
+    a, c, m = int(a), int(c), int(m)
+    if m <= 0:
+        return 0
+    x = int(seed) % m
+    start = x
+    count = 0
+    while True:
+        x = (a * x + c) % m
+        count += 1
+        if x == start or count > m:
+            return count
+
 def run_simulation(seed=13, a=21, c=3, m=100,
                    duration=30, jeepney_interval=5, jeepney_capacity=12):
 
@@ -330,6 +356,7 @@ def run_simulation(seed=13, a=21, c=3, m=100,
     gcd_am     = gcd(a, m)
     gcd_cm     = gcd(c, m)
     hd_result  = check_hull_dobell(a, c, m)
+    period     = compute_period(seed, a, c, m)
 
     avg_arrivals_per_min    = round(total_arrivals / duration, 2) if duration > 0 else 0.0
     avg_served_per_jeepney  = (round(total_served / jeepneys_dispatched, 2)
@@ -360,6 +387,8 @@ def run_simulation(seed=13, a=21, c=3, m=100,
             "avg_served_per_jeepney": avg_served_per_jeepney,
             "service_rate_pct":       service_rate_pct,
             "reconciled":             reconciled,
+            "period":                 period,
+            "is_full_period":         (period == m),
         },
         "euler_phi": {
             "m":                 m,
