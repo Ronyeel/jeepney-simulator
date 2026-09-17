@@ -1,0 +1,45 @@
+BG_ROOT = "#2b2b2b"
+BG_TOOLBAR = "#f0f0f0"
+TOOLBAR_BORDER = "#d0d0d0"
+TOOLBAR_FG = "#222222"
+
+STATUSBAR_BG = "#e0e0e0"
+STATUSBAR_FG = "#333333"
+
+GRASS_SUMO = "#2c7227"
+GRASS_BORDER = "#22591e"
+
+ROAD_ASPHALT = "#121212"
+ROAD_EDGE_WHITE = "#ffffff"
+ROAD_LANE_DASH = "#ffffff"
+ROAD_DIVIDER_YELLOW = "#facc15"
+ROAD_DIVIDER_WHITE = "#ffffff"
+
+SIDEWALK_GRAY = "#737a82"
+SIDEWALK_CURB = "#94a3b8"
+
+CROSSWALK_WHITE = "#f8fafc"
+CROSSWALK_RED = "#dc2626"
+CROSSWALK_GREEN = "#16a34a"
+
+TRANSIT_BAY_HATCH = "#f59e0b"
+TRANSIT_SHED = "#334155"
+
+JEEP_GOLD = "#d97706"
+JEEP_SILVER = "#cbd5e1"
+JEEP_ROOF = "#1e3a8a"
+JEEP_SEAT = "#1e293b"
+JEEP_SEAT_OCCUPIED = "#10b981"
+JEEP_LIGHT_FRONT = "#fef08a"
+JEEP_LIGHT_REAR = "#ef4444"
+
+CAR_COLORS = ["#16a34a", "#eab308", "#f97316", "#0284c7", "#e11d48"]
+PAX_COLORS = ["#2563eb", "#059669", "#dc2626", "#7c3aed", "#ea580c", "#d97706"]
+
+FONT_MENU = ("Segoe UI", 9)
+FONT_TOOLBAR = ("Segoe UI", 9)
+FONT_TOOLBAR_BOLD = ("Segoe UI", 9, "bold")
+FONT_DIGITAL = ("Consolas", 10, "bold")
+FONT_STATUS = ("Segoe UI", 8)
+FONT_MAP = ("Segoe UI", 8, "bold")
+FONT_MAP_TINY = ("Segoe UI", 6, "bold")
