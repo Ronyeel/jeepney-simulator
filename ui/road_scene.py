@@ -106,23 +106,23 @@ class RoadScene(tk.Canvas):
                 px - rx + 2, py - ry + 1, px + rx - 2, py + ry - 1,
                 fill="#35a035", outline="", tags="static")
 
-        # Trees along top grass
+     
         for tx in [80, 240, 430, 600, 780, 960, 1130]:
             if 0 < tx < W and not (cx - 25 < tx < cx + 95):
                 _tree(tx, top_edge - 2, h=28, r=10)
 
-        # Bushes along top sidewalk edge
+    
         for px in [45, 160, 340, 510, 700, 870, 1050, 1200]:
             if 0 < px < W and not (cx - 20 < px < cx + 90):
                 _bush(px, top_edge - 3, rx=8, ry=4)
 
-        # Bushes along bottom grass (avoid bay/shed area)
+      
         for px in [60, 200, 380, 1080, 1200]:
             if 0 < px < W and not (bay - 140 < px < bay + 210):
                 if bot_edge + 10 < H - 5:
                     _bush(px, bot_edge + 8, rx=10, ry=5)
 
-        # Subtle grass texture patches
+     
         for gx, gy in [(35, 18), (180, 12), (500, 22), (780, 8), (1080, 28),
                         (300, 25), (650, 15), (900, 20)]:
             if gx < W and gy < top_edge - 10:
@@ -130,7 +130,6 @@ class RoadScene(tk.Canvas):
                     gx - 5, gy - 2, gx + 5, gy + 2,
                     fill="#267322", outline="", tags="static")
 
-        # Street lamp posts along top grass
         for lx in [200, 520, 850, 1070]:
             if 0 < lx < W and not (cx - 20 < lx < cx + 90):
                 pole_top = 8
@@ -226,24 +225,24 @@ class RoadScene(tk.Canvas):
         sw = 130
         sh = 26
 
-        # Shelter support posts
+
         for px in [sx + 5, sx + sw - 5]:
             self.create_rectangle(
                 px - 2, sy - 6, px + 2, sy + sh,
                 fill="#475569", outline="#384152", width=1, tags="static")
 
-        # Shelter canopy / roof
+  
         self.create_rectangle(sx - 5, sy - 9, sx + sw + 5, sy - 3,
                                fill="#334155", outline="#475569", width=1, tags="static")
-        # Amber accent stripe on roof
+    
         self.create_rectangle(sx - 5, sy - 11, sx + sw + 5, sy - 9,
                                fill=TRANSIT_BAY_HATCH, outline="", tags="static")
 
-        # Shelter body
+ 
         self.create_rectangle(sx, sy, sx + sw, sy + sh,
                                fill=TRANSIT_SHED, outline="#475569", width=2, tags="static")
 
-        # Bench inside shelter
+   
         self.create_rectangle(sx + 8, sy + sh - 9, sx + sw - 8, sy + sh - 5,
                                fill="#5a6577", outline="", tags="static")
 
@@ -251,7 +250,7 @@ class RoadScene(tk.Canvas):
                          text="WAITING SHED",
                          font=FONT_MAP_TINY, fill="#f8fafc", tags="static")
 
-        # Loading bay sign with amber background
+       
         sign_cx = bx + bw // 2
         sign_cy = rb + 14
         self.create_rectangle(
@@ -286,14 +285,14 @@ class RoadScene(tk.Canvas):
     def _draw_scale_and_labels(self):
         W = self.W
 
-        # Green road direction sign: TO DAET (westbound)
+     
         s1x, s1y = 80, self.road_top - 16
         self.create_rectangle(s1x - 48, s1y - 10, s1x + 48, s1y + 10,
                                fill="#166534", outline="#15803d", width=2, tags="static")
         self.create_text(s1x, s1y, text="◀  TO DAET",
                          font=FONT_MAP, fill="#ffffff", tags="static")
 
-        # Green road direction sign: TO MERCEDES (eastbound)
+ 
         s2x, s2y = W - 90, self.road_bot + 16
         self.create_rectangle(s2x - 62, s2y - 10, s2x + 62, s2y + 10,
                                fill="#166534", outline="#15803d", width=2, tags="static")
