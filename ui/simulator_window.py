@@ -162,8 +162,8 @@ class SimulatorWindow:
             command=self._on_seed_change
         )
         seed_spin.pack(side=tk.LEFT, padx=(0, 2))
-        seed_spin.bind("<Return>", lambda e: self._on_seed_change())
-        seed_spin.bind("<FocusOut>", lambda e: self._on_seed_change())
+        seed_spin.bind("<Return>", lambda e: self._on_seed_change(is_focus_out=False))
+        seed_spin.bind("<FocusOut>", lambda e: self._on_seed_change(is_focus_out=True))
 
         tk.Label(lcm_group, text="a:", bg=BG_TOOLBAR, fg="#334155", font=FONT_TOOLBAR_BOLD).pack(side=tk.LEFT, padx=(2, 1))
         self.a_var = tk.IntVar(value=21)
@@ -174,8 +174,8 @@ class SimulatorWindow:
             command=self._on_a_change
         )
         a_spin.pack(side=tk.LEFT, padx=(0, 2))
-        a_spin.bind("<Return>", lambda e: self._on_a_change())
-        a_spin.bind("<FocusOut>", lambda e: self._on_a_change())
+        a_spin.bind("<Return>", lambda e: self._on_a_change(is_focus_out=False))
+        a_spin.bind("<FocusOut>", lambda e: self._on_a_change(is_focus_out=True))
 
         tk.Label(lcm_group, text="c:", bg=BG_TOOLBAR, fg="#334155", font=FONT_TOOLBAR_BOLD).pack(side=tk.LEFT, padx=(2, 1))
         self.c_var = tk.IntVar(value=3)
@@ -186,8 +186,8 @@ class SimulatorWindow:
             command=self._on_c_change
         )
         c_spin.pack(side=tk.LEFT, padx=(0, 2))
-        c_spin.bind("<Return>", lambda e: self._on_c_change())
-        c_spin.bind("<FocusOut>", lambda e: self._on_c_change())
+        c_spin.bind("<Return>", lambda e: self._on_c_change(is_focus_out=False))
+        c_spin.bind("<FocusOut>", lambda e: self._on_c_change(is_focus_out=True))
 
         tk.Label(lcm_group, text="m:", bg=BG_TOOLBAR, fg="#334155", font=FONT_TOOLBAR_BOLD).pack(side=tk.LEFT, padx=(2, 1))
         self.m_var = tk.IntVar(value=100)
@@ -198,8 +198,8 @@ class SimulatorWindow:
             command=self._on_m_change
         )
         m_spin.pack(side=tk.LEFT, padx=(0, 1))
-        m_spin.bind("<Return>", lambda e: self._on_m_change())
-        m_spin.bind("<FocusOut>", lambda e: self._on_m_change())
+        m_spin.bind("<Return>", lambda e: self._on_m_change(is_focus_out=False))
+        m_spin.bind("<FocusOut>", lambda e: self._on_m_change(is_focus_out=True))
         m_spin.bind("<KeyRelease>", self._on_m_key_release)
         divider()
 
@@ -212,8 +212,8 @@ class SimulatorWindow:
             command=self._on_duration_change
         )
         dur_spin.pack(side=tk.LEFT, padx=(0, 1))
-        dur_spin.bind("<Return>", lambda e: self._on_duration_change())
-        dur_spin.bind("<FocusOut>", lambda e: self._on_duration_change())
+        dur_spin.bind("<Return>", lambda e: self._on_duration_change(is_focus_out=False))
+        dur_spin.bind("<FocusOut>", lambda e: self._on_duration_change(is_focus_out=True))
         divider()
 
         tk.Label(bar, text="Cap:", bg=BG_TOOLBAR, fg="#444444", font=FONT_TOOLBAR).pack(side=tk.LEFT, padx=(1, 1))
@@ -225,8 +225,8 @@ class SimulatorWindow:
             command=self._on_capacity_change
         )
         cap_spin.pack(side=tk.LEFT, padx=(0, 1))
-        cap_spin.bind("<Return>", lambda e: self._on_capacity_change())
-        cap_spin.bind("<FocusOut>", lambda e: self._on_capacity_change())
+        cap_spin.bind("<Return>", lambda e: self._on_capacity_change(is_focus_out=False))
+        cap_spin.bind("<FocusOut>", lambda e: self._on_capacity_change(is_focus_out=True))
 
     def _build_canvas(self):
         self.canvas = RoadScene(self.root, self.WW, 400)
